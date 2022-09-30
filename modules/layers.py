@@ -20,10 +20,8 @@ class PositionwiseFeedForward(nn.Module):
         self.w_2 = nn.Linear(dim_ff, dim_model)
         self.dropout = nn.Dropout(dropout)
 
-    """
     def forward(self, x):
         return self.w_2(self.dropout(th.relu(self.w_1(x))))
-    """
 
 
 class SubLayerWrapper(nn.Module):
@@ -37,10 +35,8 @@ class SubLayerWrapper(nn.Module):
         self.norm = th.nn.LayerNorm(size)
         self.dropout = nn.Dropout(dropout)
 
-    """
     def forward(self, x, sublayer):
         return x + self.dropout(sublayer(self.norm(x)))
-    """
 
 
 class EncoderLayer(nn.Module):

@@ -19,7 +19,6 @@ class MultiHeadAttention(nn.Module):
         )
         # print(self.linears)
 
-    """
     def get(self, x, fields='qkv'):
         "Return a dict of queries / keys / values."
         batch_size = x.shape[0]
@@ -36,4 +35,3 @@ class MultiHeadAttention(nn.Module):
         "get output of the multi-head attention"
         batch_size = x.shape[0]
         return self.linears[3](x.view(batch_size, -1))
-    """

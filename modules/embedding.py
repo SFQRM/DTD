@@ -18,7 +18,16 @@ class PositionalEncoding(nn.Module):
         pe = pe.unsqueeze(0)
         self.register_buffer('pe', pe)  # Not a parameter but should be in state_dict
 
-    """
     def forward(self, pos):
         return th.index_select(self.pe, 1, pos).squeeze(0)
-    """
+
+
+class Embeddings(nn.Module):
+    "Word Embedding module"
+    def __init__(self, vocab_size, dim_model):
+        super(Embeddings, self).__init__()
+        self.lut = nn.Embedding(vocab_size, dim_model)
+        self.dim_model = dim_model
+
+    def forward(self, x):
+        return self.lut(x) * np.sqrt(self.dim_model)
