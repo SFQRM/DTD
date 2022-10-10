@@ -4,6 +4,7 @@ from .embedding import *
 from .functions import *
 import torch as th
 import dgl.function as fn
+import torch.nn.init as INIT
 
 
 class Encoder(nn.Module):
@@ -71,12 +72,12 @@ class Decoder(nn.Module):
 
 
 class Transformer(nn.Module):
-    def __init__(self, encoder, decoder, pos_enc, h, d_k, src_embed, tgt_embed):
+    def __init__(self, encoder, decoder, pos_enc, h, d_k, src_embed, tgt_embed, generator):
         super(Transformer, self).__init__()
         self.encoder,  self.decoder = encoder, decoder
         self.src_embed, self.tgt_embed = src_embed, tgt_embed
         self.pos_enc = pos_enc
-        # self.generator = generator
+        self.generator = generator
         self.h, self.d_k = h, d_k
         self.att_weight_map = None
 
@@ -134,6 +135,8 @@ class Transformer(nn.Module):
             nodes_e, nodes_d, edges = nids['enc'], nids['dec'], eids['ed']
             self.update_graph(g, edges, [(pre_q, nodes_d), (pre_kv, nodes_e)], [(post_func, nodes_d)])
 
+        return self.generator(g.ndata['x'][nids['dec']])
+
 
 def make_model(h, dim_model, dim_ff, dropout, N, src_vocab, tgt_vocab):
     "注意力计算"
@@ -152,5 +155,13 @@ def make_model(h, dim_model, dim_ff, dropout, N, src_vocab, tgt_vocab):
     "目标点嵌入"
     tgt_embed = Embeddings(tgt_vocab, dim_model)
 
+    generator = Generator(dim_model, tgt_vocab)
+
     # model = Transformer(encoder, decoder, src_embed, tgt_embed, pos_enc, generator, h, dim_model // h)
-    model = Transformer(encoder, decoder, pos_enc, h, dim_model // h, src_embed, tgt_embed)
+    model = Transformer(encoder, decoder, pos_enc, h, dim_model // h, src_embed, tgt_embed, generator)
+
+    # xavier init
+    for p in model.parameters():
+        if p.dim() > 1:
+            INIT.xavier_uniform_(p)
+    return model

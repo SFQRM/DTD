@@ -56,3 +56,18 @@ class DecoderLayer(nn.Module):
         self.src_attn = src_attn
         self.feed_forward = feed_forward
         self.sublayer = clones(SubLayerWrapper(size, dropout), 3)
+
+
+class Generator(nn.Module):
+    '''
+    Generate next token from the representation. This part is separated from the decoder, mostly for the convenience of sharing weight between embedding and generator.
+    log(softmax(Wx + b))
+    '''
+    def __init__(self, dim_model, vocab_size):
+        super(Generator, self).__init__()
+        self.proj = nn.Linear(dim_model, vocab_size)
+
+    def forward(self, x):
+        return th.log_softmax(
+            self.proj(x), dim=-1
+        )
