@@ -139,7 +139,7 @@ class Transformer(nn.Module):
 
 
 def make_model(h, dim_model, dim_ff, dropout, N, src_vocab, tgt_vocab):
-    "注意力计算"
+    "注意力计算"""
     attn = MultiHeadAttention(h, dim_model)
     "前馈网络"
     ff = PositionwiseFeedForward(dim_model, dim_ff)
